@@ -23,17 +23,16 @@ class FlightFinder
             $vertexes = FlightController::getFlightFromByDate($flight->to_id, $flight->time_end);
             foreach ($vertexes as $vertex) {
                 $newRoute = $route;
-                array_push($newRoute, $vertex);
+                array_push($newRoute->tickets, $vertex);
                 $this::findRoute($vertex, $dest, $newRoute, $endDate);
             }
         }
     }
 
     public function findFligths($fromCityId, $toCityId, $startDate, $endDate) {
-        $startFlights = FlightController::getFlightFromByDate($fromCityId, $startDate);
-        $routes = [];
+        $startFlights = FlightController::getFlightInCurrentDay($fromCityId, $startDate);
         foreach ($startFlights as $flight) {
-            $this::findRoute($flight, $toCityId, [$flight], $endDate);
+            $this::findRoute($flight, $toCityId, (object)['tickets' => [$flight]], $endDate);
         }
         return $this->routes;
     }

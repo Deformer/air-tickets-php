@@ -28,4 +28,8 @@ class Flight extends Model
     public function scopeMoreThanFromDate($query, \DateTime $startDate) {
         return $query->where('time_start', '>', $startDate);
     }
+
+    public function scopeInCurrentDay($query, \DateTime $startDate) {
+        return $query->whereDate('time_start', '=', $startDate);
+    }
 }

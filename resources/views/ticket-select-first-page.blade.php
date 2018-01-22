@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
     <link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.css" />
     <link rel="stylesheet" href="//cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css">
+    <title>Выбор дат и мест для путешествия</title>
 </head>
 <body>
 <div id="app">
@@ -54,7 +55,7 @@
 
     <div class="container">
         <h2>Список доступных рейсов</h2>
-        <table id="tickets" class="display" cellspacing="0" width="100%">
+        <table id="tickets" class="display tables" cellspacing="0" width="100%">
             <thead>
             <tr>
                 <th>Рейс</th>
@@ -73,7 +74,11 @@
                 <tr>
                     <td>{{ $flight->airline }}</td>
                     <td>{{ $flight->class }}</td>
-                    <td>{{ $flight->price }}</td>
+                    @if ($flight->hasDiscount)
+                        <td><s>{{ $flight->price }}</s> {{ $flight->priceWithDiscount }}</td>
+                    @else
+                        <td>{{ $flight->price }}</td>
+                    @endif
                     <td>{{ $flight->number_of_tickets }}</td>
                     <td>{{ $flight->aircraft->name }}</td>
                     <td>{{ $flight->from->name }}</td>
@@ -85,12 +90,30 @@
             </tbody>
         </table>
     </div>
+    <div class="container">
+        <h2>Список доступных сезонных скидок</h2>
+        <table id="discounts" class="display tables" cellspacing="0" width="100%">
+            <thead>
+            <tr>
+                <th>Направление</th>
+                <th>Скидка %</th>
+            </tr>
+            </thead>
+            <tbody>
+            @foreach($discounts as $discount)
+                <tr>
+                    <td>{{ $discount->city->name }}</td>
+                    <td>{{ $discount->discount_percentages }}</td>
+            @endforeach
+            </tbody>
+        </table>
+    </div>
 
 
 
 </div>
 </body>
-<script type="text/javascript" src="{!! asset('js/app.js') !!}"></script>
+{{--<script type="text/javascript" src="{!! asset('js/app.js') !!}"></script>--}}
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="{!! asset('bootstrap/js/bootstrap.min.js') !!}"></script>
 <script type="text/javascript" src="//cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
@@ -108,7 +131,7 @@
         });
 
         $(document).ready(function() {
-            $('#tickets').DataTable();
+            $('.tables').DataTable();
         } );
     });
 </script>

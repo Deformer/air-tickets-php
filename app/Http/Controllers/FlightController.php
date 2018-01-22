@@ -17,6 +17,10 @@ class FlightController extends Controller
         return Flight::byCityId($cityId)->moreThanFromDate(new \DateTime($date))->with(['from', 'to', 'aircraft'])->get();
     }
 
+    public static function getFlightInCurrentDay($cityId, $date) {
+        return Flight::byCityId($cityId)->inCurrentDay(new \DateTime($date))->with(['from', 'to', 'aircraft'])->get();
+    }
+
     public static function allFlightsInRange(int $fromCityId, int $toCityId, string $startDate, string $endDate){
         $flightFinder = new FlightFinder();
         return $flightFinder->findFligths($fromCityId, $toCityId, $startDate, $endDate);

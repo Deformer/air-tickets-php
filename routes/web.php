@@ -5,6 +5,8 @@ use App\Http\Controllers\FlightController as FlightCtrl;
 use Illuminate\Http\Request;
 use App\City;
 use App\Order;
+use App\SeasonDiscount;
+use App\Helpers\RouteFormat;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -19,7 +21,10 @@ use App\Order;
 Route::get('/', function () {
     $countries = CountryCtrl::index();
     $flights = FlightCtrl::index();
-    return view('ticket-select-first-page', ['countries' => $countries, 'flights' => $flights]);
+    $discounts = SeasonDiscount::with('city')->get();
+    $flights = RouteFormat::calculateDiscountsForTickets($flights);
+
+    return view('ticket-select-first-page', ['countries' => $countries, 'flights' => $flights, 'discounts' => $discounts]);
 });
 
 Route::get('/hello', function () {
@@ -38,33 +43,15 @@ Route::get('/available-flights', function (Request $request){
     $routes = FlightCtrl::allFlightsInRange($from, $to, $startDate, $endDate);
     $fromCity = City::find($from);
     $toCity = City::find($to);
+    foreach ($routes as $route) {
+        $route = RouteFormat::calculateDiscountsForRoute($route);
+    }
     return view('available-flights', ['routes' => $routes, 'fromCity' => $fromCity, 'toCity' => $toCity]);
 });
 
 Route::get('/order-page/{orderId}', function ($orderId) {
-    $order= Order::with('tickets')->find($orderId);
-    $order->wholePrice = 0;
-    $order->wholePriceWithDiscounts = 0;
-    $order->hasDiscounts = False;
-
-
-    foreach ($order->tickets as $ticket) {
-        $destinationCity = City::with('seasonDiscount')->find($ticket->to_id);
-        $seasonDiscount = $destinationCity->seasonDiscount;
-        $ticket->discount = $seasonDiscount;
-        if ($seasonDiscount != null) {
-            $discountValue = $ticket->price / 100 * $seasonDiscount->discount_percentages;
-            $ticket->priceWithDiscount = $ticket->price - $discountValue;
-            $order->wholePriceWithDiscounts += $ticket->priceWithDiscount;
-            $order->hasDiscounts = True;
-            $ticket->hasDiscount = True;
-        }
-        else {
-            $ticket->hasDiscount = False;
-            $order->wholePrice += $ticket->price;
-            $order->wholePriceWithDiscounts += $ticket->price;
-        }
-    }
+    $order = Order::with('tickets')->find($orderId);
+    $order = RouteFormat::calculateDiscountsForRoute($order);
 
     return view('order-page', ['order' => $order]);
 });
