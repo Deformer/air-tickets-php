@@ -4,6 +4,9 @@ use Illuminate\Http\Request;
 use App\Article;
 use App\Order;
 use App\City;
+use App\Http\Controllers\CountryController as CountryCtrl;
+use App\Http\Controllers\FlightController as FlightCtrl;
+use App\Aircraft;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,25 +30,10 @@ Route::post('choose-tickets', function (Request $request) {
     return $order;
 });
 
-Route::get('order/{id}', function ($orderId) {
-    $order= Order::with('tickets')->find($orderId);
-    $order->wholePrice = 0;
+Route::post('flight', function (Request $request) {
+    $countries = CountryCtrl::index();
+    $flights = FlightCtrl::index();
+    $aircrafts = Aircraft::get();
 
-
-
-    foreach ($order->tickets as $ticket) {
-        $destinationCity = City::with('seasonDiscount')->find($ticket->to_id);
-        $seasonDiscount = $destinationCity->seasonDiscount;
-        $ticket->discount = $seasonDiscount;
-        if ($seasonDiscount != null) {
-            $discountValue = $ticket->price / 100 * $seasonDiscount->discount_percentages;
-            $ticket->priceWithDiscount = $ticket->price - $discountValue;
-            $order->wholePrice += $ticket->priceWithDiscount;
-
-        }
-        else {
-            $order->wholePrice += $ticket->price;
-        }
-    }
-    return $order;
+    return view('admin-add-airline', ['countries' => $countries, 'aircrafts' => $aircrafts]);
 });

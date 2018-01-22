@@ -7,6 +7,7 @@ use App\City;
 use App\Order;
 use App\SeasonDiscount;
 use App\Helpers\RouteFormat;
+use App\Aircraft;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -27,8 +28,12 @@ Route::get('/', function () {
     return view('ticket-select-first-page', ['countries' => $countries, 'flights' => $flights, 'discounts' => $discounts]);
 });
 
-Route::get('/hello', function () {
-    return view('hello', ['name' => 'James']);
+Route::get('/admin', function () {
+    $countries = CountryCtrl::index();
+    $flights = FlightCtrl::index();
+    $aircrafts = Aircraft::get();
+
+    return view('admin-add-airline', ['countries' => $countries, 'aircrafts' => $aircrafts]);
 });
 
 Route::get('/available-flights', function (Request $request){

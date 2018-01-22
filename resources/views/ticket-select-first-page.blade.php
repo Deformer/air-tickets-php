@@ -42,7 +42,6 @@
             <div class="col-xs-3">
                 <div class="form-group">
                     <input class="form-control" type="text" name="daterange" value="2017/10/10 - 2017/10/11" />
-
                 </div>
             </div>
             <div class="col-xs-3">
@@ -104,6 +103,7 @@
                 <tr>
                     <td>{{ $discount->city->name }}</td>
                     <td>{{ $discount->discount_percentages }}</td>
+                </tr>
             @endforeach
             </tbody>
         </table>
@@ -124,7 +124,6 @@
 <script>
     $(function() {
         $('input[name="daterange"]').daterangepicker({
-            timePickerIncrement: 30,
             locale: {
                 format: 'YYYY/MM/DD'
             }

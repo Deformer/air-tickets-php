@@ -31,6 +31,7 @@
                         </li>
                     </ul>
                 </div>
+
                 <div class="col-sm-8">
                     <table id="table{{ $key }}" class="display tables table-bordered" cellspacing="0" width="100%">
                         <thead>
@@ -100,7 +101,12 @@
 
     $(function() {
         $(document).ready(function() {
-            $('.tables').DataTable({searching: false, paging: false, bPaginate: false, bInfo: false});
+            $('.tables').DataTable({
+                searching: false,
+                paging: false,
+                bPaginate: false,
+                bInfo: false
+            });
         } );
 
         $('.choose-button').on('click', function() {
