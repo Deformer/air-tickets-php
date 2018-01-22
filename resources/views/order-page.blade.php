@@ -15,6 +15,7 @@
                             <h2 class="card-title"> Заказ №{{ $order->id }}</h2>
                         </div>
                         <ul class="list-group list-group-flush">
+                            <li class="list-group-item">Поездка из: {{ $order->fromCity->name}} в {{ $order->toCity->name }} </li>
                             @if ($order->hasDiscounts)
                                 <li class="list-group-item">В данном пути есть сезонные скидки!</li>
                                 <li class="list-group-item">Общая цена с учетом скидок: {{ $order->wholePriceWithDiscounts }}$</li>

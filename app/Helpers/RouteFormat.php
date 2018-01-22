@@ -25,6 +25,16 @@ class RouteFormat
         return $timeInRoute->format('%H часов %i минут');
     }
 
+    public static function routeStartAndDestination($route) {
+        $firstTicket = $route->tickets[0];
+        $lastTicket = $route->tickets[count($route->tickets) - 1];
+
+        $route->fromCity = $firstTicket->from;
+        $route->toCity = $lastTicket->to;
+
+        return $route;
+    }
+
     public static function calculateDiscountsForTickets($tickets) {
         foreach ($tickets as $ticket) {
             $destinationCity = City::with('seasonDiscount')->find($ticket->to_id);
@@ -48,6 +58,7 @@ class RouteFormat
         $route->hasDiscounts = False;
         $route->wholeTimeInRoute = RouteFormat::timeInRoute($route);
         $route->ticketsNumber = count($route->tickets);
+        $route = RouteFormat::routeStartAndDestination($route);
 
         foreach ($route->tickets as $flight) {
             $destinationCity = City::with('seasonDiscount')->find($flight->to_id);
