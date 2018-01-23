@@ -5,6 +5,12 @@
     <title>Заказ</title>
 </head>
 <body>
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">Система бронирования билетов</a>
+</nav>
 <div id="app">
     <div class="container">
         <div class="row">
@@ -29,8 +35,32 @@
                                 <li class="list-group-item">Прямой рейс</li>
                             @endif
                         </ul>
-
-
+                        <h4 class="col-sm-12">Информация о пользователе</h4>
+                        <table class="display tables" cellspacing="0" width="100%">
+                            <thead>
+                            <tr>
+                                <th>ФИО</th>
+                                <th>Возраст</th>
+                                <th>Пол</th>
+                                <th>Серия паспорта</th>
+                                <th>Номер паспорта</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ $order->person->name }}</td>
+                                    <td>{{ $order->person->age }}</td>
+                                    @if ($order->person->gender == 'M')
+                                        <td>Мужчина</td>
+                                    @else
+                                        <td>Женщина</td>
+                                    @endif
+                                    <td>{{ $order->person->passport_series }}</td>
+                                    <td>{{ $order->person->passport_number }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <h4 class="col-sm-12">Информация о билетах</h4>
                         <table class="display tables" cellspacing="0" width="100%">
                             <thead>
                             <tr>

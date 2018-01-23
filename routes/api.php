@@ -7,6 +7,7 @@ use App\City;
 use App\Http\Controllers\CountryController as CountryCtrl;
 use App\Http\Controllers\FlightController as FlightCtrl;
 use App\Aircraft;
+use App\Person;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +22,21 @@ use App\Aircraft;
 
 Route::post('choose-tickets', function (Request $request) {
     $tickets = $request->input('tickets');
-    $order = Order::create();
+    $personId = $request->input('personId');
+    $order = Order::create(['person_id' => $personId]);
 
     foreach ($tickets as $ticket) {
         $order->tickets()->attach($ticket);
     }
 
     return $order;
+});
+
+Route::post('person', function (Request $request) {
+    $personData = $request->input('person');
+    $person = Person::create($personData);
+
+    return $person;
 });
 
 Route::post('flight', function (Request $request) {

@@ -19,21 +19,29 @@ use App\Aircraft;
 |
 */
 
-Route::get('/', function () {
-    $countries = CountryCtrl::index();
-    $flights = FlightCtrl::index();
-    $discounts = SeasonDiscount::with('city')->get();
-    $flights = RouteFormat::calculateDiscountsForTickets($flights);
-
-    return view('ticket-select-first-page', ['countries' => $countries, 'flights' => $flights, 'discounts' => $discounts]);
-});
-
 Route::get('/admin', function () {
     $countries = CountryCtrl::index();
     $flights = FlightCtrl::index();
     $aircrafts = Aircraft::get();
 
     return view('admin-add-airline', ['countries' => $countries, 'aircrafts' => $aircrafts]);
+});
+
+Route::get('/', function () {
+    return view('home');
+});
+
+Route::get('/registration', function () {
+    return view('user-registration-page');
+});
+
+Route::get('/select-tickets', function () {
+    $countries = CountryCtrl::index();
+    $flights = FlightCtrl::index();
+    $discounts = SeasonDiscount::with('city')->get();
+    $flights = RouteFormat::calculateDiscountsForTickets($flights);
+
+    return view('ticket-select-first-page', ['countries' => $countries, 'flights' => $flights, 'discounts' => $discounts]);
 });
 
 Route::get('/available-flights', function (Request $request){

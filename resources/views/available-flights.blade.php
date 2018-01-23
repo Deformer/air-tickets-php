@@ -5,6 +5,12 @@
     <title>Список доступных путей</title>
 </head>
 <body>
+<nav class="navbar navbar-toggleable-md navbar-light bg-faded">
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" href="#">Система бронирования билетов</a>
+</nav>
     <div class="container">
         <h2>Список доступных путей из {{ $fromCity->name }} в {{ $toCity->name }}</h2>
         @foreach($routes as $key=>$route)
@@ -73,6 +79,28 @@
             </div>
         @endforeach
     </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" role="dialog">
+        <div class="modal-dialog">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Что то пошло не так</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Для того, чтобы заказать биллеты, нужно указать личные данные</p>
+                </div>
+                <div class="modal-footer">
+                    <button id="go-reg" class="btn btn-primary">Заполнить личные данные</button>
+                    <button type="button" class="btn btn-danger" data-dismiss="modal">Закрыть</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </body>
 <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
@@ -80,8 +108,8 @@
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
 
 <script>
-    function chooseTicketsRequest(tickets) {
-        $.post("/api/choose-tickets", { tickets : tickets}, function (data) {
+    function chooseTicketsRequest(tickets, personId) {
+        $.post("/api/choose-tickets", { tickets : tickets, personId: personId }, function (data) {
             var orderId = data.id;
             location.href = '/order-page/' + orderId;
         })
@@ -109,12 +137,21 @@
             });
         } );
 
-        $('.choose-button').on('click', function() {
-            var id = $(this).attr('id');
-            var tableId = '#table' + id;
-            var tickets = getTicketsIdsByTableId(tableId);
+        $('#go-reg').click(function () {
+           location.href = '/registration'
+        });
 
-            chooseTicketsRequest(tickets);
+        $('.choose-button').on('click', function() {
+            var personId = sessionStorage.getItem('personId');
+            if (!personId) {
+                $("#myModal").modal();
+            } else {
+                var id = $(this).attr('id');
+                var tableId = '#table' + id;
+                var tickets = getTicketsIdsByTableId(tableId);
+
+                chooseTicketsRequest(tickets, personId);
+            }
         })
     });
 </script>
