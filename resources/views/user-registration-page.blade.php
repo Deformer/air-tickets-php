@@ -24,7 +24,7 @@
 </nav>
 
 <div class="container">
-    <form style="margin-bottom: 0px; margin-left: auto; margin-right: auto;" id="ticketform" class="form-horizontal" method="post" action="/api/flight">
+    <form style="margin-bottom: 0px; margin-left: auto; margin-right: auto;" id="person-form" name="person-form" class="form-horizontal" method="post" action="/api/flight">
         <div class="row">
             <div class="form-group">
                 <h1 class="col-sm-offset-3 col-sm-6">
@@ -35,20 +35,20 @@
             <div class="form-group">
                 <label class="control-label col-sm-3" >ФИО </label>
                 <div class="col-sm-3">
-                    <input placeholder="Иванов Иван Иванович" form="ticketform" class="form-control" name="name">
+                    <input placeholder="Иванов Иван Иванович" for="name" form="person-form" class="form-control" name="name">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="control-label col-sm-3">Возраст </label>
                 <div class="col-sm-3">
-                    <input placeholder="99" form="ticketform" class="form-control" name="age">
+                    <input placeholder="99" for="age" form="person-form" class="form-control" name="age">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="control-label col-sm-3">Пол </label>
-                <select form="ticketform" name="gender" class="selectpicker col-sm-3" >
+                <select form="person-form" name="gender" class="selectpicker col-sm-3" >
                     <option value="M">Мужской</option>
                     <option value="F">Женский</option>
                 </select>
@@ -57,14 +57,14 @@
             <div class="form-group">
                 <label class="control-label col-sm-3">Серия паспорта </label>
                 <div class="col-sm-3">
-                    <input placeholder="1234" form="ticketform" class="form-control" name="passport_series">
+                    <input placeholder="1234" for="passport_series" form="person-form" class="form-control" name="passport_series">
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="control-label col-sm-3">Номер паспорта </label>
                 <div class="col-sm-3">
-                    <input placeholder="123456" form="ticketform" class="form-control" name="passport_number">
+                    <input placeholder="123456" for="passport_number" form="person-form" class="form-control" name="passport_number">
                 </div>
             </div>
 
@@ -84,19 +84,68 @@
 <script type="text/javascript" src="//cdn.jsdelivr.net/bootstrap.daterangepicker/2/daterangepicker.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/js/bootstrap-select.min.js"></script>
 <script src="//cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.15.1/jquery.validate.min.js"></script>
 <script>
     $(function() {
-        $( "#ticketform" ).submit(function( event, data ) {
+        $( "#person-form" ).submit(function( event ) {
             event.preventDefault();
-            var person = $( this ).serializeArray().reduce(function (acc, kv) {
-                acc[kv.name] = kv.value;
-                return acc;
-            }, {});
-            $.post('/api/person', { person: person }, function(data) {
-                console.log(data);
-                sessionStorage.setItem('personId', data.id);
-                location.href = '/select-tickets';
-            })
+        });
+
+        $("form[name='person-form']").validate({
+            // Specify validation rules
+            rules: {
+                // The key name on the left side is the name attribute
+                // of an input field. Validation rules are defined
+                // on the right side
+                name: "required",
+                age: {
+                    required: true,
+                    number: true,
+                    min:1
+                },
+                passport_series: {
+                    required: true,
+                    minlength: 4,
+                    maxlength: 4
+                },
+                passport_number: {
+                    required: true,
+                    minlength: 6,
+                    maxlength: 6
+                }
+            },
+            // Specify validation error messages
+            messages: {
+                name: "Обязательно укажите имя",
+                age: {
+                    required: "Обязательно укажите возраст",
+                    number: "Возраст должен быть числом",
+                    min: "Возраст должен быть блольше нуля"
+                },
+                passport_series: {
+                    required: "Обязательно укажите серию паспорта",
+                    minlength: "Серия паспорта должна быть длиной в 4 символа",
+                    maxlength: "Серия паспорта должна быть длиной в 4 символа"
+                },
+                passport_number: {
+                    required: "Обязательно укажите номер паспорта",
+                    minlength: "Номер паспорта должен быть длиной в 6 симолов",
+                    maxlength: "Номер паспорта должен быть длиной в 6 симолов"
+                }
+            },
+            // Make sure the form is submitted to the destination defined
+            // in the "action" attribute of the form when valid
+            submitHandler: function() {
+                var person = $( "#person-form" ).serializeArray().reduce(function (acc, kv) {
+                    acc[kv.name] = kv.value;
+                    return acc;
+                }, {});
+
+                $.post('/api/person', { person: person }, function(data) {
+                    sessionStorage.setItem('personId', data.id);
+                    location.href = '/select-tickets';
+                })
+            }
         });
     });
 </script>
