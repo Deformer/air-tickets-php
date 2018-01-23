@@ -22,7 +22,7 @@ class FlightFinder
         } else {
             $vertexes = FlightController::getFlightFromByDate($flight->to_id, $flight->time_end);
             foreach ($vertexes as $vertex) {
-                $newRoute = $route;
+                $newRoute = clone $route;
                 array_push($newRoute->tickets, $vertex);
                 $this::findRoute($vertex, $dest, $newRoute, $endDate);
             }
